@@ -1,0 +1,309 @@
+openapi: 3.0.3
+info:
+  title: Rentals Api
+  description: |-
+    **This is the documentation for rental_app api.**
+
+    NOTES
+    - Notes
+    - Dates `2022-09-09T07:52:39.407Z`
+
+  # termsOfService: http://swagger.io/terms/
+  contact:
+    name: the Developer
+    # url:
+    email: olaniyiolabode99@gmail.com
+  version: 1.0.0
+externalDocs:
+  description: Github
+  url: http://github.com/nierowheezy/
+servers:
+  - url: http://localhost:3000/api/v1
+  - url: http://dev.rentals.com:3000
+tags:
+  - name: Admin
+    description: Operations on admin
+  - name: User
+    description: Operations on user
+  - name: Auth
+    description: Operations on authentication/authorization
+  - name: Test
+    description: Test the API
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login a user
+      description: Login a user or admin
+      operationId: login
+      parameters: []
+      requestBody:
+        description: Login an existent existing user
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthLoginRequest"
+        required: true
+      responses:
+        "200":
+          description: Status 200 Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthLoginResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+      security:
+        - BearerAuth: []
+
+  /test:
+    get:
+      tags:
+        - Auth
+      summary: Test the api
+      description: Test the api
+      operationId: test
+      responses:
+        "200":
+          description: Status 200 Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+      security:
+        - BearerAuth: []
+
+components:
+  schemas:
+    InternalError:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          default: Internal Error
+    ValidationError:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          default: Validation Error
+        validationError:
+          type: array
+          minimum: 1
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                example: too small
+              minimum:
+                type: number
+                example: 2
+              type:
+                type: string
+                example: string
+              inclusive:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: Should be at least 2 characters
+              path:
+                type: array
+                items:
+                  type: string
+                  example: example
+    ForbiddenError:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          default: Forbidden
+    NotFoundError:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          default: Not Found
+    UnauthorizedError:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          default: Unauthorized
+    Success:
+      properties:
+        message:
+          type: string
+        data:
+          oneOf:
+            - type: array
+            - type: object
+    AuthLoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          description: unique user email
+          example: "john@hairsap.com"
+        password:
+          type: string
+          description: card type, either virtual or physical
+          example: "john1234"
+          minimum: 7
+          maximum: 32
+    AuthLoginResponse:
+      type: object
+      properties:
+        email:
+          type: string
+          description: unique user email
+          example: "john@hairsap.com"
+        password:
+          type: string
+          description: card type, either virtual or physical
+          example: "john1234"
+          minimum: 7
+          maximum: 32
+
+    TestResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: test
+          example: "API is running good"
+
+    ServicesResponse:
+      type: array
+      items:
+        type: object
+        required:
+          - serviceId
+          - name
+          - photoUrl
+          - price
+          - serviceId
+          - createdAt
+          - updatedAt
+        properties:
+          serviceId:
+            type: number
+            example: 1
+          name:
+            type: string
+            example: "Braiding"
+          photoUrl:
+            type: string
+            example: "https://google.com/image_png"
+          createdAt:
+            type: number
+            example: "2022-08-26T15:28:13.528Z"
+          updatedAt:
+            type: number
+            example: "2022-08-26T15:28:13.528Z"
+          subServcies:
+            type: array
+            items:
+              type: object
+              required:
+                - subServiceId
+                - name
+                - photoUrl
+                - price
+                - serviceId
+                - createdAt
+                - updatedAt
+              properties:
+                subServiceId:
+                  type: number
+                  example: 1
+                name:
+                  type: string
+                  example: "Test Services"
+                photoUrl:
+                  type: string
+                  example: "https://google.com/image_png"
+                price:
+                  type: number
+                  example: 2000000
+                serviceId:
+                  type: number
+                  example: 1
+                createdAt:
+                  type: number
+                  example: "2022-08-26T15:28:13.528Z"
+                updatedAt:
+                  type: number
+                  example: "2022-08-26T15:28:13.528Z"
+
+  responses:
+    InternalError:
+      description: Status 500 Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/InternalError"
+    ValidationError:
+      description: Status 400 Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+    ForbiddenError:
+      description: Status 400 Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ForbiddenError"
+    NotFoundError:
+      description: Status 400 Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
+    UnauthorizedError:
+      description: Status 400 Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UnauthorizedError"
+    Success:
+      description: Status 400 Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Success"
+  # requestBodies:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
